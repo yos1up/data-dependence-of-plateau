@@ -14,6 +14,21 @@ def safe_arcsin(x):
 # 上のwarningがしょっちゅうでる場合は，QRTの初期条件が不正でないか確認してください
 # (Qが半正定値でないとか)
 
+def elem_sym_value(x, d):
+    '''
+    d 次の基本対称式 P(x) の値を返す．
+    例えば x = [3, 4, 5], d = 2 の時は 3*4 + 4*5 + 3*5 の値が返る．
+
+    d==0 の場合は 1 が返ります．
+    '''
+    import itertools
+    x = np.asarray(x)
+    assert(0 <= d <= len(x))
+    ret = 0
+    for t in itertools.combinations(range(len(x)), d):
+        ret += np.prod(x[list(t)])
+    return ret
+
 class act_erf:
     def g(self,x):
         return spsp.erf(x/np.sqrt(2.))
@@ -539,7 +554,6 @@ class opd_inf_KM_inf_highorder:
         self.nonzero_distinct_lambdas = np.unique(lambdas[np.nonzero(lambdas)]) # 非ゼロの相異なる固有値
         self.deg = len(self.nonzero_distinct_lambdas) # その種類数．
         assert(etasq_full == True)
-        assert(self.deg <= 2) # いずれ外せるかも．
         assert(np.min(lambdas) >= 0) # Σ は正定値であるべき．
         assert(QRT.shape == (self.deg, K+M, K+M))
         assert(ABC.shape == (K+M, K+M))
@@ -547,12 +561,17 @@ class opd_inf_KM_inf_highorder:
 
         # Σ の固有多項式（の係数）
         
-        if self.deg == 2:
-            self.poly = [np.prod(self.nonzero_distinct_lambdas), -np.sum(self.nonzero_distinct_lambdas), 1]
-        elif self.deg == 1:
-            self.poly = [-self.nonzero_distinct_lambdas[0], 1]
-        assert(len(self.poly) == self.deg + 1)
+        # if self.deg == 2:
+        #     self.poly = [np.prod(self.nonzero_distinct_lambdas), -np.sum(self.nonzero_distinct_lambdas), 1]
+        # elif self.deg == 1:
+        #     self.poly = [-self.nonzero_distinct_lambdas[0], 1]
+        self.poly = [
+            (-1)**(i+self.deg) * elem_sym_value(self.nonzero_distinct_lambdas, self.deg-i)
+            for i in range(self.deg+1)
+        ]
         print('poly deg:', self.deg)
+        if (self.deg > 5):
+            print('WARNING: high degree! It would take a lot of time!')
 
         # 固有値モーメント(e乗平均)の計算
         self.lambda_moment = np.zeros(self.deg + 2)

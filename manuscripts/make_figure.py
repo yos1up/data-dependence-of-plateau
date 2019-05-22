@@ -21,8 +21,8 @@ def set_label(ax, label, loc='upper right', borderpad=-1, bbox_to_anchor=(0, 1),
 def make_fig2():
     gauss_path = '../microscopic_experiments/gauss_cpp/1000trials'
     # out{0--19}.txt
-    iris_path = '../microscopic_experiments/iris_cpp/iris150_4-2-1(s-t)_sigmcrossent_sigmoid_lr0.005/1000000trials'
-    mnist_path = '../microscopic_experiments/mnist_cpp/mnist60000_784_2_1(s-t)_sigmcrossent_sigmoid_lr0.005/1000trials'
+    iris_path = '../microscopic_experiments/iris_cpp/iris150_4-2-1(s-t)_squared_sigmoid_lr0.005/1000000trials'
+    mnist_path = '../microscopic_experiments/mnist_cpp/mnist60000_784_2_1(s-t)_squared_sigmoid_lr0.005/1000trials'
     # out{0--29}.txt
 
     def load_cpp_output(filenames):
